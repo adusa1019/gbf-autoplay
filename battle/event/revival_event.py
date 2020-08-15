@@ -1,4 +1,6 @@
-from event import Event
+import time
+
+from battle.event.base import Event
 
 
 class RevivalEvent(Event):

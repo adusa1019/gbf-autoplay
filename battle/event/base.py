@@ -1,7 +1,7 @@
 import time
 import traceback
 
-from battle import Battle
+from battle.base import Battle
 
 
 class Event(Battle):

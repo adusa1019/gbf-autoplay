@@ -29,7 +29,7 @@ def load_config(file="config.yaml"):
 def initialize(config):
     mobile = {"deviceName": "iPad Pro"}
     options = webdriver.ChromeOptions()
-    options.add_argument(f"user-data-dir=./{config['account']}")
+    options.add_argument(f"user-data-dir=./data/{config['account']}")
     options.add_argument("--disable-extensions")
     options.add_argument("--proxy-server='direct://'")
     options.add_argument("--proxy-bypass-list=*")
@@ -73,55 +73,6 @@ class GBF:
 
     def run(self):
         self.task.run()
-
-    def daily_casino_cage(self):
-        self.driver.get("http://gbf.game.mbga.jp/#casino/exchange")
-        self.driver.find_elements_by_class_name("prt-page-number")[1].click()
-        # NOTE: マグナアニマの交換
-        count = 6
-        while count:
-            try:
-                es = self.driver.find_elements_by_class_name("btn-exchange")
-                es[7].click()
-                self.driver.find_element_by_class_name("exchange").click()
-                self.driver.find_element_by_class_name("btn-usual-ok").click()
-            except (exceptions.StaleElementReferenceException, exceptions.NoSuchElementException):
-                continue
-            except IndexError:
-                return
-            except exceptions.ElementClickInterceptedException:
-                self.driver.refresh()
-                self.driver.find_elements_by_class_name("prt-page-number")[1].click()
-                continue
-            except Exception:
-                traceback.print_exc()
-                breakpoint()
-            else:
-                count -= 1
-        # NOTE: 半汁/種の交換
-        count = 2
-        while count:
-            try:
-                es = self.driver.find_elements_by_class_name("btn-exchange")
-                es[7].click()
-                s = Select(self.driver.find_element_by_class_name("num-set"))
-                s.select_by_value(s.options[-1].text)
-                self.driver.find_element_by_class_name("exchange").click()
-                self.driver.find_element_by_class_name("btn-usual-ok").click()
-            except (exceptions.StaleElementReferenceException,
-                    exceptions.ElementClickInterceptedException):
-                self.driver.refresh()
-                self.driver.find_elements_by_class_name("prt-page-number")[1].click()
-                continue
-            except exceptions.NoSuchElementException:
-                continue
-            except IndexError:
-                return
-            except Exception:
-                traceback.print_exc()
-                breakpoint()
-            else:
-                count -= 1
 
     # TODO: rewrite
     def daily_treasure_trade(self):

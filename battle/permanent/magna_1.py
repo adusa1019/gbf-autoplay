@@ -1,10 +1,11 @@
 import time
 import traceback
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait as wait
 
-from battle import Battle
+from battle.base import Battle
 
 
 # TODO: 適切な名前をつける
