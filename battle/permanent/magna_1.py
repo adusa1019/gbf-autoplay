@@ -13,7 +13,7 @@ from battle.base import Battle
 class MagnaI(Battle):
     enemys = "ティアマト コロッサス リヴァイアサン ユグドラシル シュヴァリエ セレスト アドウェルサ".split()
     # TODO: 複数許容できるものをどうするか考える
-    supporters = "カグヤ エウロペ ブローディア グリームニル バハムート ルシフェル".split()
+    supporters = ["アイテムドロップ率"] + ["属性攻撃力"] * 5
 
     def __init__(self, driver, config):
         super().__init__(driver, supporter=config.get("supporter", None))
