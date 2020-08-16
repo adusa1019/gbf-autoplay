@@ -1,23 +1,21 @@
 import argparse
-import time
 import traceback
 
 import yaml
 from selenium import webdriver
-from selenium.common import exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait as wait
 
-from permanent import MagnaI
-from proving_grounds import ProvingGrounds
-from revival_event import RevivalEvent
-from rise_of_the_beasts import RiseOfTheBeasts
-from showdowns import Showdowns
-from quest import Quest
-from story_event import StoryEvent
-from unite_and_fight import UniteAndFight
+from daily import Daily
+from battle.event.proving_grounds import ProvingGrounds
+from battle.event.revival_event import RevivalEvent
+from battle.event.rise_of_the_beasts import RiseOfTheBeasts
+from battle.event.showdowns import Showdowns
+from battle.permanent.quest import Quest
+from battle.event.story_event import StoryEvent
+from battle.event.unite_and_fight import UniteAndFight
 from utils import Utils
 
 
@@ -46,7 +44,7 @@ def initialize(config):
 
 class GBF:
     tasks = {
-        "daily": MagnaI,
+        "daily": Daily,
         "quest": Quest,
         "ストイベ": StoryEvent,
         "復刻": RevivalEvent,
@@ -131,9 +129,6 @@ if __name__ == "__main__":
     try:
         gbf = GBF(driver, config)
         gbf.move_to_game()
-        if config["task_name"] == "daily":
-            gbf.daily_casino_cage()
-            # gbf.daily_treasure_trade()
         gbf.boost_item_drop_rate()
         gbf.run()
     except Exception:
