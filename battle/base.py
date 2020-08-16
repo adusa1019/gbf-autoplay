@@ -1,3 +1,4 @@
+import re
 import time
 import traceback
 from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException, StaleElementReferenceException, ElementNotInteractableException
@@ -50,6 +51,12 @@ class Battle:
                 if self.supporter:
                     *es, = filter(lambda x: self.supporter in x.text, es)
                 if es:
+
+                    def supporter_info_to_int(x):
+                        x = [t for t in x.text.split("\n") if self.supporter in t]
+                        return int(re.sub(r"\D", "", x[0]))
+
+                    es.sort(key=lambda x: supporter_info_to_int(x), reverse=True)
                     es[0].click()
                     return
             except Exception:
