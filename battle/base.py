@@ -53,8 +53,10 @@ class Battle:
                 if es:
 
                     def supporter_info_to_int(x):
-                        x = [t for t in x.text.split("\n") if self.supporter in t]
-                        return int(re.sub(r"\D", "", x[0]))
+                        x = [
+                            t for t in x.text.replace("/", "\n").split("\n") if self.supporter in t
+                        ]
+                        return int(re.sub(r"\D", "", re.sub(r"最大\d+", "0", x[0])))
 
                     es.sort(key=lambda x: supporter_info_to_int(x), reverse=True)
                     es[0].click()
