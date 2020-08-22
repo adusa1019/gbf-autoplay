@@ -124,9 +124,9 @@ class Battle:
         self.driver.find_element_by_class_name("btn-command-back").click()
 
     # TODO: ElementNotInteractable に対応する
-    def summon(self):
+    def summon(self, index=-1):
         self.driver.find_element_by_class_name("summon-on").click()
-        self.driver.find_elements_by_class_name("lis-summon")[-1].click()
+        self.driver.find_elements_by_class_name("lis-summon")[index].click()
         self.driver.find_element_by_class_name("btn-summon-use").click()
         try:
             self.driver.find_element_by_class_name("btn-command-back").click()
