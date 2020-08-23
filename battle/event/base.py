@@ -7,7 +7,9 @@ from battle.base import Battle
 class Event(Battle):
 
     def __init__(self, driver, config):
-        super().__init__(driver, supporter=config.get("supporter", None))
+        super().__init__(driver,
+                         supporter=config.get("supporter", None),
+                         supporter2=config.get("supporter2", None))
         self.target = config.get("target")
         self.use_debuff = config.get("use_debuff", False)
         self.use_treasure_hunt = config.get("use_treasure_hunt", False)

@@ -10,7 +10,9 @@ from battle import Battle
 class Quest(Battle):
 
     def __init__(self, driver, config):
-        super().__init__(driver, supporter=config.get("supporter", None))
+        super().__init__(driver,
+                         supporter=config.get("supporter", None),
+                         supporter2=config.get("supporter2", None))
         self.continue_ = True
         self.target = config.get("target")
 
