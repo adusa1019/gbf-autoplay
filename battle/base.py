@@ -10,9 +10,10 @@ from utils import Utils
 
 class Battle:
 
-    def __init__(self, driver, supporter=None):
+    def __init__(self, driver, supporter=None, supporter2=None):
         self.driver = driver
         self.supporter = supporter
+        self.second_supporter = supporter2
         self.utils = Utils(driver)
 
     def wait_until_battle_start(self):
@@ -41,24 +42,24 @@ class Battle:
                 (By.XPATH, '//div[@class="btn-use-full index-1"]'))).click()
         self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
 
+    def _supporter_info_to_int(self, x):
+        x = [t for t in x.text.replace("/", "\n").split("\n") if self.supporter in t]
+        return int(re.sub(r"\D", "", re.sub(r"最大\d+", "0", x[0])))
+
     def select_supporter_stone(self, loop_count=10):
         if "supporter" not in self.driver.current_url:
             return
         for _ in range(loop_count):
             try:
-                *es, = filter(lambda x: x.text,
-                              self.driver.find_elements_by_class_name("btn-supporter"))
+                base = [
+                    e for e in self.driver.find_elements_by_class_name("btn-supporter") if e.text
+                ]
                 if self.supporter:
-                    *es, = filter(lambda x: self.supporter in x.text, es)
+                    *es, = filter(lambda x: self.supporter in x.text, base)
+                if es is None and self.second_supporter:
+                    *es, = filter(lambda x: self.supporter2 in x.text, base)
                 if es:
-
-                    def supporter_info_to_int(x):
-                        x = [
-                            t for t in x.text.replace("/", "\n").split("\n") if self.supporter in t
-                        ]
-                        return int(re.sub(r"\D", "", re.sub(r"最大\d+", "0", x[0])))
-
-                    es.sort(key=lambda x: supporter_info_to_int(x), reverse=True)
+                    es.sort(key=lambda x: self._supporter_info_to_int(x), reverse=True)
                     es[0].click()
                     return
             except Exception:
