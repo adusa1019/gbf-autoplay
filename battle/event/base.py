@@ -50,7 +50,10 @@ class Event(Battle):
         self.select_supporter_stone()
         self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
         self.wait_until_battle_start()
+        self.battle_routine()
+        self.battle_result()
+
+    def battle_routine(self):
         if self.use_debuff:
             self.debuff()
         self.auto_battle()
-        self.battle_result()
