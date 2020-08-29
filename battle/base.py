@@ -8,12 +8,17 @@ from selenium.webdriver.support.ui import Select, WebDriverWait as wait
 from utils import Utils
 
 
+def _supporter_info_to_int(x, supporter):
+    x = [t for t in x.text.replace("/", "\n").split("\n") if supporter in t]
+    return int(re.sub(r"\D", "", re.sub(r"最大\d+", "0", x[0])))
+
+
 class Battle:
 
     def __init__(self, driver, supporter=None, supporter2=None):
         self.driver = driver
         self.supporter = supporter
-        self.second_supporter = supporter2
+        self.supporter2 = supporter2
         self.utils = Utils(driver)
 
     def wait_until_battle_start(self):
@@ -42,10 +47,6 @@ class Battle:
                 (By.XPATH, '//div[@class="btn-use-full index-1"]'))).click()
         self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
 
-    def _supporter_info_to_int(self, x):
-        x = [t for t in x.text.replace("/", "\n").split("\n") if self.supporter in t]
-        return int(re.sub(r"\D", "", re.sub(r"最大\d+", "0", x[0])))
-
     def select_supporter_stone(self, loop_count=10):
         if "supporter" not in self.driver.current_url:
             return
@@ -56,10 +57,11 @@ class Battle:
                 ]
                 if self.supporter:
                     *es, = filter(lambda x: self.supporter in x.text, base)
-                if es is None and self.second_supporter:
+                    es.sort(key=lambda x: _supporter_info_to_int(x, self.supporter), reverse=True)
+                if not es and self.supporter2:
                     *es, = filter(lambda x: self.supporter2 in x.text, base)
+                    es.sort(key=lambda x: _supporter_info_to_int(x, self.supporter2), reverse=True)
                 if es:
-                    es.sort(key=lambda x: self._supporter_info_to_int(x), reverse=True)
                     es[0].click()
                     return
             except Exception:
@@ -186,6 +188,7 @@ class Battle:
                 self.utils.wait_and_click_element_by_class_name("btn-auto", time=60)
                 wait(self.driver, battle_time).until(
                     ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-start")))
+                time.sleep(1)
                 self.driver.refresh()
             except Exception:
                 pass
