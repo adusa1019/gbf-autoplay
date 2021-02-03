@@ -1,4 +1,5 @@
 import argparse
+import os
 import traceback
 
 import yaml
@@ -37,7 +38,12 @@ def initialize(config):
     options.add_argument("--start-maximized")
     # options.add_argument("--headless")
     options.add_experimental_option("mobileEmulation", mobile)
-    driver = webdriver.Chrome("./chromedriver.exe", desired_capabilities=options.to_capabilities())
+    if os.name == "posix":
+        driver = webdriver.Chrome("./chromedriver",
+                                  desired_capabilities=options.to_capabilities())
+    else:
+        driver = webdriver.Chrome("./chromedriver.exe",
+                                  desired_capabilities=options.to_capabilities())
     driver.implicitly_wait(10)
     return driver
 
@@ -46,7 +52,7 @@ class GBF:
     tasks = {
         "daily": Daily,
         "quest": Quest,
-        "ストイベ": StoryEvent,
+        "story": StoryEvent,
         "復刻": RevivalEvent,
         "撃滅戦": Showdowns,
         "四象降臨": RiseOfTheBeasts,
