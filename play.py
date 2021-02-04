@@ -9,14 +9,14 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait as wait
 
-from daily import Daily
-from battle.event.proving_grounds import ProvingGrounds
-from battle.event.revival_event import RevivalEvent
-from battle.event.rise_of_the_beasts import RiseOfTheBeasts
-from battle.event.showdowns import Showdowns
 from battle.permanent.quest import Quest
-from battle.event.story_event import StoryEvent
-from battle.event.unite_and_fight import UniteAndFight
+from daily import Daily
+from event.proving_grounds import ProvingGrounds
+from event.revival_event import RevivalEvent
+from event.rise_of_the_beasts import RiseOfTheBeasts
+from event.showdowns import Showdowns
+from event.story_event import StoryEvent
+from event.unite_and_fight import UniteAndFight
 from utils import Utils
 
 
