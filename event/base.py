@@ -13,11 +13,16 @@ class Event(Battle):
         self.target = config.get("target")
         self.use_debuff = config.get("use_debuff", False)
         self.use_treasure_hunt = config.get("use_treasure_hunt", False)
+        self.url = config.get("url", None)
 
     def move_to_event(self):
-        self.utils.wait_and_click_element_by_class_name("btn-head-pop")
-        self.utils.wait_and_click_element_by_class_name("img-global-banner")
-        self.base_url = self.driver.current_url
+        if self.url:
+            self.base_url = "http://gbf.game.mbga.jp/#event/" + self.url
+            self.driver.get(self.base_url)
+        else:
+            self.utils.wait_and_click_element_by_class_name("btn-head-pop")
+            self.utils.wait_and_click_element_by_class_name("img-global-banner")
+            self.base_url = self.driver.current_url
         self.driver.refresh()
 
     def skip_hell(self):
@@ -28,8 +33,23 @@ class Event(Battle):
 
     def run(self):
         self.move_to_event()
+        if self.target == "box":
+            self.run_treasure()
+        else:
+            self.run_battle()
+
+    def run_treasure(self):
         self.pre_loop_actions()
-        while True:
+        while self.continue_:
+            try:
+                self.open_treasurebox()
+            except Exception:
+                traceback.print_exc()
+                breakpoint()
+
+    def run_battle(self):
+        self.pre_loop_actions()
+        while self.continue_:
             try:
                 if len(self.driver.find_elements_by_class_name("type-treasureraid-hell")):
                     self.skip_hell()
@@ -59,3 +79,28 @@ class Event(Battle):
         if self.use_debuff:
             self.debuff()
         self.auto_battle()
+
+    def open_treasurebox(self):
+        if len(self.driver.find_elements_by_class_name("btn-bulk-play")):
+            self.driver.find_element_by_class_name("btn-bulk-play").click()
+            time.sleep(5)
+            self.driver.find_element_by_id("cjs-gacha").click()
+            time.sleep(10)
+            self.driver.find_element_by_id("cjs-gacha").click()
+        elif len(self.driver.find_elements_by_class_name("btn-medal")) > 1:
+            self.driver.find_element_by_class_name("btn-medal").click()
+            time.sleep(1)
+            if len(self.driver.find_elements_by_id("cjs-gacha")):
+                time.sleep(4)
+                self.driver.find_element_by_id("cjs-gacha").click()
+                time.sleep(10)
+                self.driver.find_element_by_id("cjs-gacha").click()
+        else:
+            if not len(self.driver.find_elements_by_class_name("btn-reset")):
+                self.continue_ = False
+                return
+            self.driver.find_element_by_class_name("btn-reset").click()
+            self.driver.find_element_by_class_name("btn-usual-ok").click()
+            time.sleep(2)
+            self.driver.get(self.base_url)
+            self.select_difficulty()
