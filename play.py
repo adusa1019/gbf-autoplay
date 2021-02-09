@@ -4,10 +4,6 @@ import traceback
 
 import yaml
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.ui import WebDriverWait as wait
 
 from battle.permanent.quest import Quest
 from daily import Daily
@@ -39,12 +35,10 @@ def initialize(config):
     # options.add_argument("--headless")
     options.add_experimental_option("mobileEmulation", mobile)
     if os.name == "posix":
-        driver = webdriver.Chrome("./chromedriver",
-                                  desired_capabilities=options.to_capabilities())
+        driver = webdriver.Chrome("./chromedriver", desired_capabilities=options.to_capabilities())
     else:
         driver = webdriver.Chrome("./chromedriver.exe",
                                   desired_capabilities=options.to_capabilities())
-    driver.implicitly_wait(10)
     return driver
 
 
@@ -78,51 +72,6 @@ class GBF:
     def run(self):
         self.task.run()
 
-    # TODO: rewrite
-    def daily_treasure_trade(self):
-        self.utils.wait_and_click_element_by_class_name("btn-head-pop")
-        self.utils.wait_and_click_element_by_class_name("txt-global-shop")
-        self.utils.wait_and_click_element_by_class_name("btn-treasure-shop")
-        self.utils.wait_and_click_element_by_class_name("btn-switch-treasure")
-        Select(
-            wait(self.driver, 10).until(
-                ec.visibility_of_element_located(
-                    (By.CLASS_NAME, "frm-list-select-treasure")))).select_by_value("5")
-        es = wait(self.driver,
-                  10).until(ec.visibility_of_all_elements_located((By.CLASS_NAME, "btn-exchange")))
-        if len(es) < 6:
-            return
-        for i in range(2):
-            es = wait(self.driver, 10).until(
-                ec.visibility_of_all_elements_located((By.CLASS_NAME, "btn-exchange")))
-            es[i + 2].click()
-            s = Select(
-                wait(self.driver,
-                     10).until(ec.visibility_of_element_located((By.CLASS_NAME, "num-set"))))
-            s.select_by_value(s.options[-1].text)
-            self.utils.wait_and_click_element_by_class_name("btn-usual-text")
-            self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
-
-    def boost_item_drop_rate(self):
-        while self.driver.current_url != "http://gbf.game.mbga.jp/#shop/exchange/trajectory":
-            self.driver.get("http://gbf.game.mbga.jp/#shop/exchange/trajectory")
-        while True:
-            try:
-                es = self.driver.find_elements_by_class_name("btn-use-support")
-                if es[-1].find_element_by_xpath("..").text.split()[0] != 'アイテムドロップ率UP':
-                    return
-                es[-1].click()
-            except IndexError:
-                continue
-            except Exception:
-                traceback.print_exc()
-                breakpoint()
-            else:
-                break
-        self.driver.find_elements_by_class_name("btn-level")[-1].click()
-        self.driver.find_element_by_class_name("btn-usual-ok").click()
-        self.driver.refresh()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -135,7 +84,6 @@ if __name__ == "__main__":
     try:
         gbf = GBF(driver, config)
         gbf.move_to_game()
-        gbf.boost_item_drop_rate()
         gbf.run()
     except Exception:
         traceback.print_exc()

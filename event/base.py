@@ -2,6 +2,7 @@ import time
 import traceback
 
 from battle.base import Battle
+from non_battle.shop.journey_drops import JourneyDrops
 
 
 class Event(Battle):
@@ -14,6 +15,7 @@ class Event(Battle):
         self.use_debuff = config.get("use_debuff", False)
         self.use_treasure_hunt = config.get("use_treasure_hunt", False)
         self.url = config.get("url", None)
+        JourneyDrops(self.driver).drop_rate()
 
     def move_to_event(self):
         if self.url:
