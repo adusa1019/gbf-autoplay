@@ -1,1 +1,1 @@
-from non_battle.casino.casino_cage import CasinoCage  # NOQA
+from non_battle.casino.cage import Cage  # NOQA
