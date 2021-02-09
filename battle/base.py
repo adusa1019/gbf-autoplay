@@ -20,6 +20,7 @@ class Battle:
         self.supporter = supporter
         self.supporter2 = supporter2
         self.utils = Utils(driver)
+        self.continue_ = True
 
     def wait_until_battle_start(self):
         wait(self.driver,

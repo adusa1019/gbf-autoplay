@@ -13,7 +13,7 @@ from battle.base import Battle
 class MagnaI(Battle):
     enemys = "ティアマト コロッサス リヴァイアサン ユグドラシル シュヴァリエ セレスト アドウェルサ".split()
     # TODO: 複数許容できるものをどうするか考える
-    supporters = ["アイテムドロップ率"] + ["属性攻撃力"] * 5
+    supporters = ["属性攻撃力"] * 6
 
     def __init__(self, driver, config):
         super().__init__(driver, supporter=config.get("supporter", None))
@@ -26,33 +26,50 @@ class MagnaI(Battle):
         self.move_to_quest()
         while self.continue_:
             try:
-                self.process_magnaI()
+                is_pro, is_magna = self.check_enemy()
+                if is_pro:
+                    self.skip_pro()
+                if is_magna:
+                    self.process_magnaI()
             except Exception:
                 traceback.print_exc()
                 breakpoint()
 
-    def process_magnaI(self):
+    def check_enemy(self):
         wait(self.driver,
              30).until(ec.visibility_of_element_located((By.CLASS_NAME, "prt-list-contents")))
         ele = self.driver.find_elements_by_class_name("prt-list-contents")[1]
         quest_name = ele.get_attribute("data-quest-name").replace("討伐戦", "").split("・")
         enemy_name, is_magna = quest_name[0], quest_name[-1] == "マグナ"
-        is_assault_time = self.driver.find_element_by_class_name("prt-assault-time").is_displayed()
-
+        is_pro = not is_magna
         if enemy_name not in self.enemys:
             self.continue_ = False
-            return
-
+            is_pro = False
         if is_magna:
+            self.enemy = enemy_name
             self.supporter = self.supporters[self.enemys.index(enemy_name)]
-        ele.click()
+        return is_pro, is_magna
+
+    def skip_pro(self):
+        self.driver.find_elements_by_class_name("prt-list-contents")[1].click()
+        wait(self.driver,
+             30).until(ec.visibility_of_element_located((By.CLASS_NAME, "btn-usual-ok"))).click()
+        time.sleep(1)
+        if len(self.driver.find_elements_by_class_name("use-item-num")):
+            self.use_elixir_half()
+        self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
+        time.sleep(5)
+        self.battle_result()
+
+    def process_magnaI(self):
+        is_assault_time = self.driver.find_element_by_class_name("prt-assault-time").is_displayed()
+        self.driver.find_elements_by_class_name("prt-list-contents")[1].click()
+
         wait(self.driver,
              30).until(ec.visibility_of_element_located((By.CLASS_NAME, "btn-select-pair-quest")))
         self.driver.find_elements_by_class_name("btn-select-pair-quest")[1].click()
-        if is_magna:
-            self.utils.wait_and_click_element_by_class_name("btn-offer")
+        self.utils.wait_and_click_element_by_class_name("btn-offer")
 
-        # TODO: 現在のスタミナと使用APから計算する
         time.sleep(1)
         if len(self.driver.find_elements_by_class_name("use-item-num")):
             self.use_elixir_half()
@@ -61,21 +78,22 @@ class MagnaI(Battle):
         self.utils.wait_and_click_element_by_class_name("btn-usual-ok")
         self.wait_until_battle_start()
         self.summon()
-        if enemy_name == "シュヴァリエ":
+        if self.enemy == "シュヴァリエ":
             # TODO: 奥義OFF
             self.attack()
         self.treasure_hunt()
-        if enemy_name == "シュヴァリエ":
+        if self.enemy == "シュヴァリエ":
             self.attack()
             # TODO: 奥義ON
         # TODO: 召喚石を使う
         if is_assault_time:
-            if self.use_debuff and is_magna:
+            if self.use_debuff:
                 self.debuff()
             self.attack()
         self.auto_battle()
         self.battle_result()
 
     def move_to_quest(self):
-        self.utils.wait_and_click_element_by_class_name("btn-head-pop")
-        self.utils.wait_and_click_element_by_class_name("btn-global-quest")
+        url = "http://gbf.game.mbga.jp/#quest"
+        while self.driver.current_url != url:
+            self.driver.get(url)
