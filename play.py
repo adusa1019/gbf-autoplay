@@ -7,6 +7,7 @@ from selenium import webdriver
 
 from battle.permanent.quest import Quest
 from daily import Daily
+from event.dread_barrage import DreadBarrage
 from event.proving_grounds import ProvingGrounds
 from event.revival_event import RevivalEvent
 from event.rise_of_the_beasts import RiseOfTheBeasts
@@ -45,6 +46,7 @@ def initialize(config):
 class GBF:
     tasks = {
         "daily": Daily,
+        "db": DreadBarrage,
         "quest": Quest,
         "story": StoryEvent,
         "復刻": RevivalEvent,
