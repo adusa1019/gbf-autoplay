@@ -73,6 +73,17 @@ class Battle:
                           self.driver.find_elements_by_class_name("btn-supporter"))
             breakpoint()
 
+    def call_assist(self):
+        wait(self.driver, 10).until(ec.element_to_be_clickable(
+            (By.CLASS_NAME, "btn-assist"))).click()
+        wait(self.driver, 20).until(ec.presence_of_element_located((By.CLASS_NAME, "pop-usual")))
+        time.sleep(1)
+        wait(self.driver, 10).until(ec.element_to_be_clickable(
+            (By.CLASS_NAME, "btn-usual-text"))).click()
+        time.sleep(1)
+        wait(self.driver, 10).until(ec.element_to_be_clickable(
+            (By.CLASS_NAME, "btn-usual-ok"))).click()
+
     def attack(self):
         wait(self.driver, 30).until(ec.element_to_be_clickable(
             (By.CLASS_NAME, "btn-attack-start"))).click()
