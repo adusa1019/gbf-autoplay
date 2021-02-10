@@ -1,5 +1,6 @@
 from battle.permanent.magna_1 import MagnaI
 from non_battle.casino.cage import Cage
+from non_battle.gacha.gacha import Gacha
 from non_battle.shop.journey_drops import JourneyDrops
 from non_battle.shop.treasure_trade import DailyTrade
 
@@ -12,6 +13,7 @@ class Daily:
 
     def run(self):
         Cage(self.driver).run()
+        Gacha(self.driver).lupi()
         DailyTrade(self.driver).run()
         JourneyDrops(self.driver).drop_rate()
         self.magna.run()
