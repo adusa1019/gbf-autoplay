@@ -74,7 +74,8 @@ class Battle:
             breakpoint()
 
     def attack(self):
-        self.driver.find_element_by_class_name("btn-attack-start").click()
+        wait(self.driver, 30).until(ec.element_to_be_clickable(
+            (By.CLASS_NAME, "btn-attack-start"))).click()
         wait(self.driver,
              30).until(ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-start")))
         wait(self.driver,
