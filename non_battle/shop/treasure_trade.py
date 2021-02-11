@@ -41,7 +41,7 @@ class Item(TreasureTrade):
             time.sleep(1)
             self.driver.find_elements_by_class_name("btn-exchange")[-1].click()
             time.sleep(1)
-            if len(self.driver.find_elements_by_class_name("num-set")):
+            if self.driver.find_element_by_class_name("num-set").is_displayed():
                 ele = Select(self.driver.find_element_by_class_name("num-set"))
                 ele.select_by_value(ele.options[-1].text)
                 time.sleep(1)
