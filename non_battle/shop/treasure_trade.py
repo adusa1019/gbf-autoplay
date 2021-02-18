@@ -35,6 +35,7 @@ class Item(TreasureTrade):
                 self.driver.refresh()
                 break
 
+    # TODO: need tuning waiting time
     def half_elixirs(self, start=3):
         self.select_tab(1, 1, name="エリクシールハーフ")
         while len(self.driver.find_elements_by_class_name("lis-item-open")) > start:
@@ -49,6 +50,7 @@ class Item(TreasureTrade):
             time.sleep(1)
             wait(self.driver, 10).until(ec.element_to_be_clickable(
                 (By.CLASS_NAME, "btn-usual-ok"))).click()
+            time.sleep(1)
 
     def showdowns(self):
         pass
