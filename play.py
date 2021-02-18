@@ -62,8 +62,11 @@ class GBF:
         self.utils = Utils(driver)
 
     def move_to_game(self):
-        self.driver.get("http://gbf.game.mbga.jp/#mypage")
+        url = "http://gbf.game.mbga.jp/#mypage"
+        self.driver.get(url)
         self.get_login_bonus()
+        if self.driver.current_url != url:
+            self.driver.get(url)
         self.driver.refresh()
 
     def get_login_bonus(self):
