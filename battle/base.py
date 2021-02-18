@@ -81,8 +81,18 @@ class Battle:
         wait(self.driver, 10).until(ec.element_to_be_clickable(
             (By.CLASS_NAME, "btn-usual-text"))).click()
         time.sleep(1)
-        wait(self.driver, 10).until(ec.element_to_be_clickable(
-            (By.CLASS_NAME, "btn-usual-ok"))).click()
+        self.driver.refresh()
+        time.sleep(1)
+
+    def revival(self):
+        self.driver.find_element_by_class_name("btn-cheer").click()
+        self.driver.refresh()
+        self.driver.find_element_by_class_name("btn-revival").click()
+        self.driver.find_element_by_class_name("btn-event-use").click()
+        self.driver.find_element_by_class_name("btn-temporary").click()
+        for _ in range(2):
+            self.driver.find_elements_by_class_name("lis-item")[3].click()
+            self.driver.find_element_by_class_name("btn-usual-ok").click()
 
     def attack(self):
         wait(self.driver, 30).until(ec.element_to_be_clickable(
@@ -92,39 +102,6 @@ class Battle:
         wait(self.driver,
              30).until(ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-cancel")))
         self.driver.refresh()
-
-    def debuff(self):
-        skills = None
-        while not skills:
-            try:
-                self.utils.wait_and_click_element_by_xpath(
-                    '//div[@class="lis-character0 btn-command-character"]', time=30)
-                skills = self.driver.find_elements_by_class_name("lis-ability")
-            except ElementClickInterceptedException:
-                pass
-            except Exception:
-                traceback.print_exc()
-                breakpoint()
-        # TODO: 時々発生する例外に対処する
-        for _ in range(10):
-            try:
-                wait(self.driver,
-                     10).until(ec.element_to_be_clickable((By.CLASS_NAME, "lis-ability")))
-                skills[1].click()
-            except Exception:
-                print("in click 1")
-            else:
-                break
-        for _ in range(10):
-            try:
-                wait(self.driver,
-                     10).until(ec.element_to_be_clickable((By.CLASS_NAME, "lis-ability")))
-                skills[2].click()
-            except Exception:
-                print("in click 2")
-            else:
-                break
-        self.driver.find_element_by_class_name("btn-command-back").click()
 
     def treasure_hunt(self):
         skills = None
@@ -137,31 +114,6 @@ class Battle:
                 pass
         wait(self.driver, 10).until(ec.element_to_be_clickable((By.CLASS_NAME, "lis-ability")))
         skills[3].click()
-        self.driver.find_element_by_class_name("btn-command-back").click()
-
-    def mechanic(self):
-        skills = None
-        while not skills:
-            try:
-                self.utils.wait_and_click_element_by_xpath(
-                    '//div[@class="lis-character0 btn-command-character"]', time=30)
-                skills = self.driver.find_elements_by_class_name("lis-ability")
-            except ElementClickInterceptedException:
-                pass
-            except Exception:
-                traceback.print_exc()
-                breakpoint()
-        # TODO: 時々発生する例外に対処する
-        for i in range(4):
-            for _ in range(10):
-                try:
-                    wait(self.driver,
-                         10).until(ec.element_to_be_clickable((By.CLASS_NAME, "lis-ability")))
-                    skills[i].click()
-                except Exception:
-                    print(f"in click {i}")
-                else:
-                    break
         self.driver.find_element_by_class_name("btn-command-back").click()
 
     # TODO: ElementNotInteractable に対応する
@@ -194,11 +146,9 @@ class Battle:
             # breakpoint()
 
     def auto_battle(self, battle_time=60):
-        while len(self.driver.find_elements_by_class_name("btn-usual-ok")) != 1:
-            if self.driver.current_url == self.base_url:
-                break
+        while "#raid" in self.driver.current_url:
             try:
-                self.utils.wait_and_click_element_by_class_name("btn-auto", time=60)
+                self.utils.wait_and_click_element_by_class_name("btn-auto", time=30)
                 wait(self.driver, battle_time).until(
                     ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-start")))
                 time.sleep(1)
@@ -209,5 +159,6 @@ class Battle:
     def battle_result(self):
         if self.driver.current_url == self.base_url:
             return
-        self.driver.find_element_by_class_name("btn-usual-ok")
+        if self.driver.find_elements_by_class_name("btn-usual-ok"):
+            self.driver.find_element_by_class_name("btn-usual-ok").click()
         self.driver.get(self.base_url)
