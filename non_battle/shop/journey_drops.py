@@ -1,5 +1,6 @@
 import traceback
 import time
+from selenium.webdriver.support.ui import Select
 
 
 class JourneyDrops:
@@ -12,7 +13,7 @@ class JourneyDrops:
         while self.driver.current_url != url:
             self.driver.get(url)
 
-    def drop_rate(self):
+    def drop_rate(self, index=0):
         self.go()
         while True:
             try:
@@ -22,6 +23,9 @@ class JourneyDrops:
                 es[-1].click()
                 time.sleep(1)
                 self.driver.find_elements_by_class_name("btn-level")[-1].click()
+                time.sleep(1)
+                ele = Select(self.driver.find_element_by_class_name("num-time"))
+                ele.select_by_value(ele.options[index].text)
                 time.sleep(1)
                 self.driver.find_element_by_class_name("btn-usual-ok").click()
                 time.sleep(1)
