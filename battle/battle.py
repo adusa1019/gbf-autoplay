@@ -126,7 +126,7 @@ class Battle:
     def auto_battle(self, battle_time=60):
         while "#raid" in self.driver.current_url:
             try:
-                wait(self.driver, 30).until(ec.element_to_be_clickable(
+                wait(self.driver, 10).until(ec.element_to_be_clickable(
                     (By.CLASS_NAME, "btn-auto"))).click()
                 wait(self.driver, battle_time).until(
                     ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-start")))
