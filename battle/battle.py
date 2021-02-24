@@ -103,16 +103,28 @@ class Battle:
             traceback.print_exc()
             breakpoint()
 
-    def call_assist(self):
+    def call_assist(self, check=(True, True, True)):
         wait(self.driver, 10).until(ec.element_to_be_clickable(
             (By.CLASS_NAME, "btn-assist"))).click()
         wait(self.driver, 20).until(ec.presence_of_element_located((By.CLASS_NAME, "pop-usual")))
         time.sleep(1)
+        for e, c in zip(self.driver.find_elements_by_class_name("btn-check"), check):
+            if int(e.get_attribute("active")) != int(c):
+                e.click()
+                time.sleep(1)
         wait(self.driver, 10).until(ec.element_to_be_clickable(
             (By.CLASS_NAME, "btn-usual-text"))).click()
         time.sleep(1)
         self.driver.refresh()
         time.sleep(1)
+
+    def get_enemy_hp(self):
+        hps = [
+            int(e.text)
+            for e in self.driver.find_elements_by_class_name("txt-gauge-value")[:3]
+            if e.is_displayed()
+        ]
+        return sum(hps) / len(hps)
 
     def attack(self):
         wait(self.driver, 30).until(ec.element_to_be_clickable(
@@ -123,20 +135,36 @@ class Battle:
              30).until(ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-cancel")))
         self.driver.refresh()
 
-    def auto_battle(self, battle_time=60):
+    def auto_battle(self, battle_time=60, reload=True):
+        assisted = False
         while "#raid" in self.driver.current_url:
             try:
+                if self.driver.find_elements_by_class_name("btn-cheer") and not assisted:
+                    self.driver.find_element_by_class_name("btn-cheer").click()
+                    time.sleep(1)
+                    self.driver.refresh()
+                """
+                if self.driver.find_element_by_class_name(
+                        "btn-revival").is_displayed() and not assisted:
+                    self.call_assist()
+                    assisted = True
+                """
                 wait(self.driver, 10).until(ec.element_to_be_clickable(
                     (By.CLASS_NAME, "btn-auto"))).click()
+                if self.get_enemy_hp() <= 50 and not assisted:
+                    self.call_assist()
+                    assisted = True
                 wait(self.driver, battle_time).until(
                     ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-start")))
                 time.sleep(1)
-                self.driver.refresh()
+                if reload:
+                    self.driver.refresh()
             except Exception:
                 # traceback.print_exc()
                 # breakpoint()
                 pass
 
-    def run(self):
+    def run(self, **kwargs):
+        reload = kwargs.get("reload", True)
         self.wait_until_battle_start()
-        self.auto_battle()
+        self.auto_battle(reload=reload)
