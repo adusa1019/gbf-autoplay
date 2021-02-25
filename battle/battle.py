@@ -135,20 +135,24 @@ class Battle:
              30).until(ec.invisibility_of_element_located((By.CLASS_NAME, "btn-attack-cancel")))
         self.driver.refresh()
 
-    def auto_battle(self, battle_time=60, reload=True):
+    def auto_battle(self, battle_time=120, reload=True):
         assisted = False
         while "#raid" in self.driver.current_url:
             try:
-                if self.driver.find_elements_by_class_name("btn-cheer") and not assisted:
+                if self.driver.find_elements_by_class_name("btn-cheer"):
                     self.driver.find_element_by_class_name("btn-cheer").click()
                     time.sleep(1)
                     self.driver.refresh()
-                """
+                    time.sleep(1)
+                    continue
+                if self.driver.find_elements_by_class_name("prt-rematch-fail"):
+                    self.driver.refresh()
+                    time.sleep(1)
+                    continue
                 if self.driver.find_element_by_class_name(
                         "btn-revival").is_displayed() and not assisted:
                     self.call_assist()
                     assisted = True
-                """
                 wait(self.driver, 10).until(ec.element_to_be_clickable(
                     (By.CLASS_NAME, "btn-auto"))).click()
                 if self.get_enemy_hp() <= 50 and not assisted:
@@ -159,6 +163,7 @@ class Battle:
                 time.sleep(1)
                 if reload:
                     self.driver.refresh()
+                    self.wait_until_battle_start()
             except Exception:
                 # traceback.print_exc()
                 # breakpoint()
