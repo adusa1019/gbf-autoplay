@@ -29,6 +29,8 @@ class Discover:
 
     # NOTE: raise error when discovers n_lv2
     def _discover(self, is_hl, difficulty, index):
+        self.driver.refresh()
+        time.sleep(1)
         url = "http://gbf.game.mbga.jp/?#quest/multi"
         while self.driver.current_url != url:
             self.driver.get(url)
