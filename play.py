@@ -18,7 +18,7 @@ from utils import Utils
 
 
 def load_config(file="config.yaml"):
-    with open(file) as f:
+    with open(file, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
