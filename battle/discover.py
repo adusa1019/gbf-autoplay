@@ -41,14 +41,20 @@ class Discover:
         time.sleep(1)
         self.driver.find_elements_by_class_name("btn-set-quest")[index].click()
         time.sleep(1)
+        # for normal LV2
+        if self.driver.find_elements_by_class_name("btn-usual-close"):
+            return False
+        if self.driver.find_elements_by_class_name("btn-select-pair-quest"):
+            self.driver.find_elements_by_class_name("btn-select-pair-quest")[-1].click()
+            time.sleep(1)
         self.driver.find_element_by_class_name("btn-offer").click()
         time.sleep(1)
+        # for normal LV3-, hl
         if self.driver.find_elements_by_class_name("btn-usual-close"):
-            self.driver.refresh()
-            time.sleep(1)
             return False
-        self.driver.find_element_by_class_name("btn-usual-ok").click()
-        time.sleep(1)
+        if self.driver.find_elements_by_class_name("btn-usual-ok"):
+            self.driver.find_element_by_class_name("btn-usual-ok").click()
+            time.sleep(1)
         return True
 
     def discover(self, name):
